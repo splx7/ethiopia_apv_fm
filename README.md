@@ -1,172 +1,140 @@
-# Ethiopia Smart APV Nexus Financial Model
+# 🌱 Ethiopia Smart APV Nexus Financial Model
 
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://ethiopia-apv-fm.streamlit.app)
+**Production-Ready Financial Analysis Tool for 500 ha APV + Irrigation + Nexus Project**
 
-**Repository**: https://github.com/splx7/ethiopia_apv_fm
+[![License: Proprietary](https://img.shields.io/badge/License-Proprietary-red.svg)](LICENSE)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![Streamlit](https://img.shields.io/badge/Streamlit-1.28.0-FF4B4B.svg)](https://streamlit.io)
 
-## 🌱 Overview
+## 📊 Overview
 
-Production-ready web-based financial model for the **Ethiopia Smart APV Nexus Project**, featuring advanced technical degradation modeling, equipment replacement scheduling, and comprehensive inflation/escalation analysis over a 20-year horizon.
+Comprehensive 20-year financial model for a Smart Agrivoltaic (APV) Nexus project in Ethiopia, featuring:
 
-**Key Features:**
-- ✅ 7 business model scenarios (Models A-G)
-- ✅ PV & BESS degradation modeling
-- ✅ Equipment replacement CAPEX tracking
-- ✅ Nominal/Real inflation analysis modes
-- ✅ Scenario sensitivity comparison
-- ✅ Interactive Streamlit UI with Material Design
+- **2.5 MWp APV System** with elevated solar structures
+- **4 MWh BESS** for energy storage and load balancing
+- **500 ha integrated irrigation** with drip/sprinkler systems
+- **Cold storage & processing facilities** for value-added agriculture
+- **Minigrid distribution** for rural electrification
 
-## 🚀 Quick Start
+## ✨ Key Features
 
-### Local Installation
+### Financial Modeling
+- **Degradation Logic**: PV (0.7%/year), BESS (2.0%/year capacity fade + 0.1%/year efficiency)
+- **Replacement CAPEX**: Component-specific lifetimes (inverters, batteries, pumps, processing equipment)
+- **Inflation & Escalation**: Real vs. Nominal analysis with Ethiopian macro assumptions
+- **IRR Separation**: Clear labels for Project IRR (pre-financing) and Equity IRR (post-debt)
+- **Salvage & Decommissioning**: End-of-life value calculations (Year 20)
 
+### Comprehensive CAPEX Breakdown (40+ Line Items)
+1. **APV / Power Systems**: PV modules, structures, inverters, BESS, electrical infrastructure, minigrid
+2. **Irrigation & Water**: Raw water intake, pumps, rising mains, on-farm distribution (drip/sprinkler)
+3. **Agriculture & Nexus**: Cold storage, packhouse, processing equipment, farm machinery
+4. **Development & Soft Costs**: Project development, ESIA, engineering, insurance, contingency
+
+### Detailed OPEX Categories
+- **Energy System**: PV O&M, BESS maintenance, security, insurance, land lease
+- **Irrigation**: Pump maintenance, filter replacement, drip lateral replacement
+- **Farm Production**: Labour, seeds, fertilizer, crop protection, packaging, logistics
+- **Cold Storage & Processing**: Labour, consumables, equipment maintenance
+- **Administration**: Management, office utilities
+
+### Analysis Tools
+- **Business Model Presets**: 7 financing scenarios (blended finance, PPP, commercial, cooperative)
+- **Scenario Comparison**: Base / Pessimistic / Optimistic with varying degradation and escalation
+- **Sensitivity Analysis**: Test impact of CAPEX, OPEX, energy prices, crop yields
+- **Real-time Visualization**: Interactive charts for cash flows, DSCR, degradation curves
+
+## 🚀 Installation & Usage
+
+### Prerequisites
 ```bash
-# Clone repository
-git clone https://github.com/splx7/ethiopia_apv_fm.git
-cd ethiopia_apv_fm
+Python 3.9 or higher
+```
 
-# Install dependencies
+### Install Dependencies
+```bash
 pip install -r requirements.txt
+```
 
-# Run application
+### Run Locally
+```bash
 streamlit run app.py
 ```
 
 The app will open at `http://localhost:8501`
 
-### Docker (Alternative)
-
-```bash
-docker build -t ethiopia-apv-model .
-docker run -p 8501:8501 ethiopia-apv-model
-```
-
-## 📊 Technical Specifications
-
-- **Project Scope**: 2.5 MWp APV + 4 MWh BESS + 500 ha irrigation
-- **Analysis Period**: 20 years (Year 0 = construction, Years 1-20 = operations)
-- **Currency**: Real USD with optional nominal analysis
-- **Default Discount Rate**: 12% (nominal) / 8% (real)
-
-## 🔧 Advanced Features
-
-### 1. Technical Degradation
-- PV annual degradation: 0.5%/year (configurable)
-- BESS capacity fade: 2%/year (configurable)
-- Automatic replacement scheduling
-
-### 2. Equipment Replacement
-- PV Inverters (Year 12, 15% of PV CAPEX)
-- Irrigation Pumps (Year 10, 30% of irrigation CAPEX)
-- BESS Replacement (Year 10, 70% of initial cost)
-- Cold Storage & Processing Overhauls (Year 12)
-- Residual Value (Year 20, 10% of total CAPEX)
-
-### 3. Inflation/Escalation
-- **Nominal Mode**: Costs and revenues escalate annually
-  - Wage escalation: 7%/year
-  - Material escalation: 5%/year
-  - Energy tariff escalation: 5%/year
-  - Crop price escalation: 4%/year
-  
-- **Real Mode**: Constant prices (original methodology)
-
-### 4. Scenario Analysis
-- Base Case (current parameters)
-- Pessimistic (worse degradation, higher inflation)
-- Optimistic (better degradation, lower inflation)
-
-## 📋 Business Models
-
-| Model | Description | Equity | Debt | Interest | Risk |
-|-------|-------------|--------|------|----------|------|
-| **Model E** (Default) | Blended Finance | 30% | 70% | 5% | Medium |
-| **Model A** | Fully Private SPC | 30% | 70% | 16% | Medium-High |
-| **Model B** | APV Only (Energy Sales) | 40% | 60% | 16% | Low-Medium |
-| **Model C** | PPP Hybrid | 25% | 75% | 10% | Low-Medium |
-| **Model D** | Grant-Funded Pilot | 0% | 0% | 0% | Low |
-| **Model F** | Cooperative + Anchor | 20% | 80% | 5% | Low |
-| **Model G** | Joint SPC (Coop+Private) | 30% | 70% | 6% | Medium |
-
-## 📖 Documentation
-
-- **Walkthrough**: See `walkthrough.md` for comprehensive feature guide
-- **Implementation Plan**: See `implementation_plan.md` for technical details
-- **Feasibility Study**: Based on Ethiopia Smart APV Nexus Chapter VIII
-
 ## 🛠️ Technology Stack
 
-- **Frontend**: Streamlit 1.28+
-- **Computation**: pandas, numpy
-- **Financial Calculations**: numpy-financial
-- **Visualization**: matplotlib
-- **Design**: Google Material Design theme
+- **Framework**: Streamlit 1.28.0
+- **Data Processing**: Pandas 2.1.0, NumPy 1.24.3
+- **Financial Calculations**: NumPy Financial 1.0.0
+- **Visualization**: Matplotlib 3.7.2
+- **Language**: Python 3.9+
 
-## 📝 Usage
+## 📈 Model Structure
 
-1. **Select Business Model** from sidebar (Model E recommended for baseline)
-2. **Adjust Parameters** in expandable sections:
-   - Technical specs (APV, BESS, irrigation)
-   - CAPEX & OPEX components
-   - Revenue parameters (energy, crops, processing)
-   - Financing structure
-   - **NEW**: Degradation parameters
-   - **NEW**: Equipment replacement schedule
-   - **NEW**: Inflation/escalation rates
-3. **Review KPIs** in main dashboard
-4. **Analyze Cash Flows** in detail table
-5. **Explore Charts** (Revenue vs OPEX, Cash Flows, DSCR, Degradation Curves)
-6. **Run Sensitivity Analysis** to test parameter variations
-7. **Compare Scenarios** (Base/Pessimistic/Optimistic)
+### Cash Flow Calculation
+```
+FCFF (Project) = Revenue - OPEX - CAPEX (initial + replacement)
+FCFE (Equity)  = FCFF - Interest - Principal + New Debt
+```
 
-## ⚙️ Configuration
+### Key Metrics
+- Project IRR & NPV (pre-financing)
+- Equity IRR & NPV (post-debt)
+- Payback Period
+- DSCR (Debt Service Coverage Ratio)
+- Cumulative Cash Flows
 
-All parameters are editable through the Streamlit UI. Key defaults:
+## 📁 Project Structure
 
-### Technical
-- APV Capacity: 2.5 MWp
-- BESS Capacity: 4 MWh
-- Irrigated Area: 470 ha
-- PV Degradation: 0.5%/year
-- BESS Degradation: 2%/year
+```
+ethiopia_fm/
+├── app.py                 # Main Streamlit application
+├── requirements.txt       # Python dependencies
+├── .streamlit/
+│   └── config.toml       # Streamlit configuration
+├── README.md             # This file
+└── LICENSE               # License information
+```
 
-### Financial
-- Equity Share: 30% (Model E)
-- Debt Interest: 5% (Model E, concessional)
-- Debt Tenor: 15 years
-- Grace Period: 3 years
-- Tax Rate: 30% (5-year holiday)
+## 🔒 License & Copyright
 
-### Economic (Nominal Mode)
-- General Inflation: 10%/year
-- Wage Escalation: 7%/year
-- Material Escalation: 5%/year
-- Energy Tariff Escalation: 5%/year
-- Crop Price Escalation: 4%/year
+**© 2024 All Rights Reserved**
 
-## 🔒 Alpha Version - Internal Testing
+This software and its source code are **proprietary and confidential**. 
 
-**Current Status**: Alpha v2.0 (Enhanced with Advanced Features)
+### ⚠️ IMPORTANT DISCLAIMER
 
-**Testing Checklist**:
-- [ ] All 7 business models functional
-- [ ] Degradation calculations verified
-- [ ] Replacement CAPEX scheduling correct
-- [ ] Nominal/Real modes produce expected results
-- [ ] Scenario comparison working
-- [ ] Export functionality tested
-- [ ] UI responsive across devices
+**UNAUTHORIZED USE, REPRODUCTION, OR DISTRIBUTION IS STRICTLY PROHIBITED.**
 
-## 📞 Support & Feedback
+This financial model and all associated documentation are the exclusive property of the copyright holder. No part of this software may be:
 
-For internal testing feedback, please contact the development team.
+- Copied, reproduced, or distributed in any form
+- Modified, adapted, or created derivative works from
+- Reverse engineered, decompiled, or disassembled
+- Used for commercial purposes without explicit written permission
 
-## 📄 License
+**Permitted Use:**
+- Authorized team members with explicit access rights
+- Internal business analysis and decision-making only
+- Non-commercial evaluation with prior written consent
 
-Internal use only - Ethiopia Smart APV Nexus Project
+**Enforcement:**
+Unauthorized use will be prosecuted to the fullest extent of applicable copyright and intellectual property laws.
+
+For licensing inquiries or permission requests, contact the repository owner.
 
 ---
 
-**Version**: 2.0 (Advanced Features)  
-**Last Updated**: 2025-12-03  
-**Status**: Alpha Testing
+## 📞 Support
+
+For authorized users only. Contact the project administrator for access and support.
+
+## 🔐 Security Notice
+
+This repository is **PRIVATE**. Do not share access credentials or repository links with unauthorized parties.
+
+---
+
+**Developed with ❤️ for sustainable agriculture and renewable energy integration in Ethiopia**
