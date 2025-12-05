@@ -2025,7 +2025,7 @@ def main():
     # Assumptions Summary
     st.header("📋 Model Assumptions Summary")
     
-    tab1, tab2, tab3 = st.tabs(["CAPEX Breakdown", "Revenue Breakdown", "Financing Structure"])
+    tab1, tab2, tab3, tab4 = st.tabs(["CAPEX Breakdown", "OPEX Breakdown", "Revenue Breakdown", "Financing Structure"])
     
     with tab1:
         # Filter out internal component items (prefixed with underscore)
@@ -2053,6 +2053,30 @@ def main():
             st.pyplot(fig)
     
     with tab2:
+        # OPEX Breakdown tab
+        opex_breakdown = opex_inputs.calculate_breakdown()
+        opex_df = pd.DataFrame({
+            'Category': list(opex_breakdown.keys()),
+            'Annual Amount (USD)': [f"${v:,.0f}" for v in opex_breakdown.values()],
+            'Share (%)': [f"{v/opex_breakdown['Total OPEX']*100:.1f}%" 
+                         for v in opex_breakdown.values()]
+        })
+        st.dataframe(opex_df, use_container_width=True, hide_index=True)
+        
+        # Pie chart for OPEX categories
+        opex_categories = {k: v for k, v in opex_breakdown.items() if k != 'Total OPEX' and v > 0}
+        if len(opex_categories) > 0:
+            fig, ax = plt.subplots(figsize=(8, 6))
+            colors = plt.cm.Oranges(np.linspace(0.3, 0.8, len(opex_categories)))
+            ax.pie(list(opex_categories.values()),
+                   labels=list(opex_categories.keys()),
+                   autopct='%1.1f%%',
+                   colors=colors,
+                   startangle=90)
+            ax.set_title('Annual OPEX Breakdown by Category')
+            st.pyplot(fig)
+    
+    with tab3:
         rev_df = pd.DataFrame({
             'Revenue Source': list(revenues_breakdown.keys()),
             'Annual Amount (USD)': [f"${v:,.0f}" for v in revenues_breakdown.values()],
@@ -2071,7 +2095,7 @@ def main():
         plt.tight_layout()
         st.pyplot(fig)
     
-    with tab3:
+    with tab4:
         spc_capex = capex_breakdown['Total CAPEX'] * (1 - public_capex)
         equity_amt = spc_capex * equity_share
         debt_amt = spc_capex * debt_share
