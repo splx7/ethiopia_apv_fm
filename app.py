@@ -1925,10 +1925,11 @@ def main():
         discount_rate=discount_rate,
     )
     
-    # Build degradation inputs (using new attribute names)
+    # Build degradation inputs
+    # Note: All UI variables are always defined by Streamlit, direct assignment is correct
     degradation_inputs = DegradationInputs(
         pv_annual_degradation_rate=pv_degradation,
-        pv_module_lifetime_years=int(pv_lifetime) if 'pv_lifetime' in dir() else 30,
+        pv_module_lifetime_years=int(pv_lifetime),
         bess_annual_capacity_fade=bess_degradation,
         bess_annual_efficiency_degradation=0.001,  # 0.1%/year default
         bess_min_soh_pct=bess_min_soh,
@@ -1936,19 +1937,20 @@ def main():
         bess_replacement_cost_pct=bess_replacement_cost_pct,
     )
     
-    # Build replacement CAPEX inputs (using new attribute names)
+    # Build replacement CAPEX inputs
+    # Note: All UI variables are always defined, no need for 'in dir()' checks
     replacement_inputs = ReplacementCapexInputs(
-        inverter_lifetime_years=int(inverter_repl_year) if 'inverter_repl_year' in dir() else 10,
-        bess_battery_lifetime_years=int(bess_replacement_year) if 'bess_replacement_year' in dir() else 10,
-        irrigation_pump_lifetime_years=int(pump_repl_year) if 'pump_repl_year' in dir() else 10,
-        cold_room_equipment_lifetime_years=int(cold_storage_overhaul_year) if 'cold_storage_overhaul_year' in dir() else 12,
-        processing_equipment_lifetime_years=int(processing_overhaul_year) if 'processing_overhaul_year' in dir() else 12,
-        inverter_replacement_fraction=inverter_repl_cost_pct if 'inverter_repl_cost_pct' in dir() else 0.70,
-        bess_replacement_fraction=bess_replacement_cost_pct if 'bess_replacement_cost_pct' in dir() else 0.80,
-        pump_replacement_fraction=pump_repl_cost_pct if 'pump_repl_cost_pct' in dir() else 0.70,
-        cold_room_replacement_fraction=cold_storage_overhaul_pct if 'cold_storage_overhaul_pct' in dir() else 0.70,
-        processing_replacement_fraction=processing_overhaul_pct if 'processing_overhaul_pct' in dir() else 0.70,
-        salvage_fraction_pv_structure=residual_value_pct if 'residual_value_pct' in dir() else 0.15,
+        inverter_lifetime_years=int(inverter_repl_year),
+        bess_battery_lifetime_years=int(bess_replacement_year),
+        irrigation_pump_lifetime_years=int(pump_repl_year),
+        cold_room_equipment_lifetime_years=int(cold_storage_overhaul_year),
+        processing_equipment_lifetime_years=int(processing_overhaul_year),
+        inverter_replacement_fraction=inverter_repl_cost_pct,
+        bess_replacement_fraction=bess_replacement_cost_pct,
+        pump_replacement_fraction=pump_repl_cost_pct,
+        cold_room_replacement_fraction=cold_storage_overhaul_pct,
+        processing_replacement_fraction=processing_overhaul_pct,
+        salvage_fraction_pv_structure=residual_value_pct,
         salvage_fraction_bess_equipment=0.10,
         salvage_fraction_other=0.10,
         decommissioning_cost_fraction=0.03,
