@@ -48,70 +48,362 @@ class TechnicalConfig:
 
 @dataclass
 class CapexInputs:
-    """CAPEX breakdown inputs (USD)"""
-    # APV system
+    """
+    Comprehensive CAPEX breakdown for 500 ha Smart APV Nexus project.
+    
+    Organized into 4 major categories per feasibility study:
+    1. APV / Power Systems
+    2. Irrigation & Water Infrastructure
+    3. Agriculture & Nexus Facilities
+    4. Development & Soft Costs
+    
+    All values in USD unless otherwise noted.
+    """
+    # ============================================================
+    # 1. APV / POWER CAPEX
+    # ============================================================
+    
+    # PV System (2.5 MWp)
     apv_capacity_kwp: float = 2500
-    apv_unit_cost: float = 900  # USD/kWp
+    pv_module_cost_per_kwp: float = 350  # USD/kWp (modules only)
+    mounting_structure_cost_per_kwp: float = 200  # USD/kWp (APV elevated structures)
+    dc_cabling_cost_per_kwp: float = 50  # USD/kWp (combiner boxes, string wiring)
+    inverter_cost_per_kwp: float = 100  # USD/kWp (string or central inverters)
     
-    # BESS
+    # BESS (4 MWh / 1.2 MW)
     bess_capacity_kwh: float = 4000
-    bess_unit_cost: float = 350  # USD/kWh
+    bess_power_kw: float = 1200
+    bess_battery_cost_per_kwh: float = 250  # USD/kWh (lithium-ion packs)
+    bess_pcs_cost_per_kw: float = 100  # USD/kW (power conversion system)
+    bess_container_cost: float = 80000  # USD (container, thermal management)
     
-    # Irrigation
+    # Electrical Infrastructure
+    ac_cabling_mv_transformer: float = 150000  # USD
+    switchgear_protection: float = 80000  # USD (earthing, lightning protection)
+    scada_ems_weather: float = 60000  # USD (monitoring, control, weather station)
+    
+    # Site Infrastructure
+    site_prep_civil_roads: float = 250000  # USD (grading, access roads, drainage)
+    fencing_security_systems: float = 90000  # USD (perimeter, CCTV, lighting)
+    
+    # Minigrid Distribution (to villages/anchor loads)
+    minigrid_poles_conductors: float = 120000  # USD
+    distribution_transformers: float = 50000  # USD
+    meters_distribution: float = 30000  # USD
+    
+    # ============================================================
+    # 2. IRRIGATION & WATER CAPEX
+    # ============================================================
+    
     irrigation_area_ha: float = 470
-    irrigation_unit_cost: float = 2175  # USD/ha
     
-    # Other systems (lump sum)
-    cold_storage_processing: float = 300000
-    electrical_infra_ems: float = 300000
-    civil_works: float = 350000
+    # Raw Water Infrastructure
+    raw_water_intake_works: float = 120000  # USD (intake structure, screens, civil)
+    raw_water_pumps: float = 80000  # USD (primary pumps at lake/river)
+    rising_main_pipeline: float = 200000  # USD (transmission to storage)
+    storage_reservoir: float = 150000  # USD (tanks or reservoir)
     
-    # Percentages
-    engineering_pct: float = 0.05  # % of direct CAPEX
-    contingency_pct: float = 0.10  # % of (direct + engineering)
+    # On-Farm Irrigation
+    irrigation_distribution_per_ha: float = 1500  # USD/ha (mainlines, submains, laterals)
+    drip_sprinkler_per_ha: float = 400  # USD/ha (drip lines, sprinklers, valves)
+    electrical_cables_panels: float = 100000  # USD (for all pumps, control)
+    fertigation_filtration: float = 60000  # USD (filters, fertigation units, meters)
+    
+    # ============================================================
+    # 3. AGRICULTURE & NEXUS FACILITIES CAPEX
+    # ============================================================
+    
+    # Cold Storage
+    cold_storage_building: float = 150000  # USD (structure, insulation, doors)
+    refrigeration_units: float = 100000  # USD
+    
+    # Packhouse & Processing
+    packhouse_facility: float = 80000  # USD (sorting, grading structure)
+    processing_equipment: float = 120000  # USD (e.g., tomato paste line)
+    processing_utilities: float = 40000  # USD
+    
+    # Farm Infrastructure
+    farm_machinery: float = 120000  # USD (tractors, implements, small equipment)
+    farm_buildings_office: float = 80000  # USD
+    internal_farm_tracks: float = 50000  # USD
+    
+    # ============================================================
+    # 4. DEVELOPMENT & SOFT COSTS
+    # ============================================================
+    
+    project_development_pct: float = 0.03  # 3% of direct CAPEX
+    esia_permits: float = 50000  # USD
+    owners_engineering_pct: float = 0.02  # 2% of direct CAPEX
+    construction_insurance_pct: float = 0.01  # 1% of direct CAPEX
+    contingency_pct: float = 0.10  # 10% of EPC + soft costs
     
     def calculate_total(self) -> Dict[str, float]:
-        """Calculate total CAPEX breakdown"""
-        apv = self.apv_capacity_kwp * self.apv_unit_cost
-        bess = self.bess_capacity_kwh * self.bess_unit_cost
-        irrigation = self.irrigation_area_ha * self.irrigation_unit_cost
+        """
+        Calculate total CAPEX with detailed breakdown by category.
         
-        direct_capex = (apv + bess + irrigation + 
-                       self.cold_storage_processing + 
-                       self.electrical_infra_ems + 
-                       self.civil_works)
+        Returns dict with:
+        - Category subtotals (APV System, BESS, Irrigation, etc.)
+        - Component totals
+        - Soft costs
+        - Total CAPEX
+        """
+        # === APV / Power Systems ===
+        pv_modules = self.apv_capacity_kwp * self.pv_module_cost_per_kwp
+        mounting_structures = self.apv_capacity_kwp * self.mounting_structure_cost_per_kwp
+        dc_cabling = self.apv_capacity_kwp * self.dc_cabling_cost_per_kwp
+        inverters = self.apv_capacity_kwp * self.inverter_cost_per_kwp
+        apv_system = pv_modules + mounting_structures + dc_cabling + inverters
         
-        engineering = direct_capex * self.engineering_pct
-        subtotal = direct_capex + engineering
+        bess_batteries = self.bess_capacity_kwh * self.bess_battery_cost_per_kwh
+        bess_pcs = self.bess_power_kw * self.bess_pcs_cost_per_kw
+        bess_total = bess_batteries + bess_pcs + self.bess_container_cost
+        
+        electrical_infra = (self.ac_cabling_mv_transformer + 
+                           self.switchgear_protection + 
+                           self.scada_ems_weather)
+        
+        site_infrastructure = self.site_prep_civil_roads + self.fencing_security_systems
+        
+        minigrid = (self.minigrid_poles_conductors + 
+                   self.distribution_transformers + 
+                   self.meters_distribution)
+        
+        power_subtotal = apv_system + bess_total + electrical_infra + site_infrastructure + minigrid
+        
+        # === Irrigation & Water ===
+        raw_water = (self.raw_water_intake_works + 
+                    self.raw_water_pumps + 
+                    self.rising_main_pipeline + 
+                    self.storage_reservoir)
+        
+        on_farm_irrigation = (self.irrigation_area_ha * self.irrigation_distribution_per_ha +
+                             self.irrigation_area_ha * self.drip_sprinkler_per_ha +
+                             self.electrical_cables_panels + 
+                             self.fertigation_filtration)
+        
+        irrigation_subtotal = raw_water + on_farm_irrigation
+        
+        # === Agriculture & Nexus ===
+        cold_storage = self.cold_storage_building + self.refrigeration_units
+        packhouse_processing = (self.packhouse_facility + 
+                               self.processing_equipment + 
+                               self.processing_utilities)
+        farm_infra = (self.farm_machinery + 
+                     self.farm_buildings_office + 
+                     self.internal_farm_tracks)
+        
+        nexus_subtotal = cold_storage + packhouse_processing + farm_infra
+        
+        # === Direct CAPEX Total ===
+        direct_capex = power_subtotal + irrigation_subtotal + nexus_subtotal
+        
+        # === Soft Costs ===
+        project_development = direct_capex * self.project_development_pct
+        owners_engineering = direct_capex * self.owners_engineering_pct
+        construction_insurance = direct_capex * self.construction_insurance_pct
+        
+        soft_costs = (project_development + 
+                     self.esia_permits + 
+                     owners_engineering + 
+                     construction_insurance)
+        
+        # === Contingency ===
+        subtotal = direct_capex + soft_costs
         contingency = subtotal * self.contingency_pct
+        
+        # === Total ===
         total = subtotal + contingency
         
         return {
-            'APV System': apv,
-            'BESS': bess,
-            'Irrigation System': irrigation,
-            'Cold Storage & Processing': self.cold_storage_processing,
-            'Electrical Infra & EMS': self.electrical_infra_ems,
-            'Civil Works': self.civil_works,
-            'Engineering & Design': engineering,
+            # Power systems breakdown
+            'APV System': apv_system,
+            'BESS': bess_total,
+            'Electrical Infrastructure': electrical_infra,
+            'Site Infrastructure': site_infrastructure,
+            'Minigrid Distribution': minigrid,
+            'Power Subtotal': power_subtotal,
+            
+            # Irrigation breakdown
+            'Raw Water Infrastructure': raw_water,
+            'On-Farm Irrigation': on_farm_irrigation,
+            'Irrigation Subtotal': irrigation_subtotal,
+            
+            # Nexus breakdown
+            'Cold Storage': cold_storage,
+            'Packhouse & Processing': packhouse_processing,
+            'Farm Infrastructure': farm_infra,
+            'Nexus Subtotal': nexus_subtotal,
+            
+            # Summary
+            'Direct CAPEX': direct_capex,
+            'Soft Costs': soft_costs,
             'Contingency': contingency,
-            'Total CAPEX': total
+            'Total CAPEX': total,
+            
+            # Component values for replacement CAPEX calculations
+            '_pv_modules': pv_modules,
+            '_inverters': inverters,
+            '_bess_batteries': bess_batteries,
+            '_bess_pcs': bess_pcs,
+            '_cold_storage': cold_storage,
+            '_processing': packhouse_processing,
         }
 
 
 @dataclass
 class OpexInputs:
-    """Annual OPEX inputs (USD/year)"""
-    apv_om: float = 40000
-    bess_om: float = 15000
-    irrigation_om: float = 40000
-    cold_storage_processing_om: float = 25000
-    staff_admin: float = 30000
+    """
+    Comprehensive annual OPEX inputs for 500 ha Smart APV Nexus project.
+    
+    All values in USD/year (Year 1 values, before escalation).
+    
+    Organized into 4 categories:
+    1. Energy System OPEX
+    2. Irrigation OPEX  
+    3. Farm Production OPEX
+    4. Cold Storage & Processing OPEX
+    """
+    # ============================================================
+    # 1. ENERGY SYSTEM OPEX
+    # ============================================================
+    
+    # PV System O&M
+    pv_cleaning_inspection: float = 25000  # USD/year (~$10/kWp)
+    pv_spare_parts: float = 15000  # USD/year
+    inverter_maintenance: float = 8000  # USD/year
+    
+    # BESS O&M
+    bess_maintenance: float = 12000  # USD/year
+    bess_monitoring: float = 3000  # USD/year
+    
+    # Site Operations
+    security_guards: float = 15000  # USD/year
+    cctv_maintenance: float = 5000  # USD/year
+    
+    # Fixed Costs
+    land_lease_fee: float = 10000  # USD/year (if applicable)
+    insurance_local_taxes: float = 25000  # USD/year
+    
+    # ============================================================
+    # 2. IRRIGATION OPEX
+    # ============================================================
+    
+    pump_maintenance_spares: float = 15000  # USD/year
+    filter_valve_replacement: float = 12000  # USD/year
+    drip_lateral_replacement: float = 8000  # USD/year
+    # Note: Electricity for pumping is internal transfer (self-consumption)
+    
+    # ============================================================
+    # 3. FARM PRODUCTION OPEX
+    # ============================================================
+    
+    # Labour
+    permanent_labour: float = 50000  # USD/year
+    seasonal_labour: float = 30000  # USD/year
+    
+    # Inputs
+    seeds_seedlings: float = 40000  # USD/year
+    fertilizer_amendments: float = 60000  # USD/year
+    crop_protection: float = 20000  # USD/year (pesticides, herbicides)
+    
+    # Logistics
+    packaging_fresh: float = 15000  # USD/year
+    field_logistics: float = 20000  # USD/year (harvesting, in-farm transport)
+    
+    # ============================================================
+    # 4. COLD STORAGE & PROCESSING OPEX
+    # ============================================================
+    
+    cold_storage_labour: float = 15000  # USD/year
+    processing_labour: float = 10000  # USD/year
+    # Note: Electricity for refrigeration/processing is internal transfer
+    consumables_packaging: float = 10000  # USD/year
+    equipment_maintenance: float = 15000  # USD/year
+    
+    # ============================================================
+    # 5. ADMINISTRATION
+    # ============================================================
+    
+    management_admin: float = 20000  # USD/year
+    office_utilities: float = 10000  # USD/year
     
     def calculate_total(self) -> float:
-        """Calculate total annual OPEX"""
-        return (self.apv_om + self.bess_om + self.irrigation_om + 
-                self.cold_storage_processing_om + self.staff_admin)
+        """Calculate total annual OPEX (Year 1)."""
+        return self.calculate_breakdown()['Total OPEX']
+    
+    def calculate_breakdown(self) -> Dict[str, float]:
+        """
+        Calculate OPEX with detailed breakdown by category.
+        
+        Returns dict with category subtotals and total.
+        """
+        # Energy System
+        energy_opex = (self.pv_cleaning_inspection + 
+                      self.pv_spare_parts + 
+                      self.inverter_maintenance +
+                      self.bess_maintenance + 
+                      self.bess_monitoring +
+                      self.security_guards + 
+                      self.cctv_maintenance +
+                      self.land_lease_fee + 
+                      self.insurance_local_taxes)
+        
+        # Irrigation
+        irrigation_opex = (self.pump_maintenance_spares + 
+                          self.filter_valve_replacement + 
+                          self.drip_lateral_replacement)
+        
+        # Farm Production
+        farm_opex = (self.permanent_labour + 
+                    self.seasonal_labour +
+                    self.seeds_seedlings + 
+                    self.fertilizer_amendments + 
+                    self.crop_protection +
+                    self.packaging_fresh + 
+                    self.field_logistics)
+        
+        # Cold Storage & Processing
+        processing_opex = (self.cold_storage_labour + 
+                          self.processing_labour +
+                          self.consumables_packaging + 
+                          self.equipment_maintenance)
+        
+        # Administration
+        admin_opex = self.management_admin + self.office_utilities
+        
+        total = energy_opex + irrigation_opex + farm_opex + processing_opex + admin_opex
+        
+        return {
+            'Energy System OPEX': energy_opex,
+            'Irrigation OPEX': irrigation_opex,
+            'Farm Production OPEX': farm_opex,
+            'Cold Storage & Processing OPEX': processing_opex,
+            'Administration OPEX': admin_opex,
+            'Total OPEX': total,
+        }
+    
+    # Legacy property for backward compatibility
+    @property
+    def apv_om(self) -> float:
+        return self.pv_cleaning_inspection + self.pv_spare_parts + self.inverter_maintenance
+    
+    @property
+    def bess_om(self) -> float:
+        return self.bess_maintenance + self.bess_monitoring
+    
+    @property
+    def irrigation_om(self) -> float:
+        return self.pump_maintenance_spares + self.filter_valve_replacement + self.drip_lateral_replacement
+    
+    @property
+    def cold_storage_processing_om(self) -> float:
+        return (self.cold_storage_labour + self.processing_labour + 
+                self.consumables_packaging + self.equipment_maintenance)
+    
+    @property
+    def staff_admin(self) -> float:
+        return (self.permanent_labour + self.seasonal_labour + 
+                self.management_admin + self.office_utilities)
 
 
 @dataclass
@@ -188,121 +480,348 @@ class FinancingInputs:
 
 @dataclass
 class DegradationInputs:
-    """Technical degradation parameters for PV and BESS"""
-    # PV degradation
-    pv_annual_degradation_pct: float = 0.005  # 0.5%/year
-    pv_useful_lifetime_years: int = 25
+    """
+    Technical degradation parameters for PV and BESS systems.
     
-    # BESS degradation
-    bess_annual_degradation_pct: float = 0.02  # 2%/year
-    bess_min_soh_pct: float = 0.70  # 70% minimum SOH
+    Implements industry-standard degradation formulas:
+    - PV: E_t = E1 * (1 - pv_annual_degradation_rate)^(t-1)
+    - BESS: Capacity_t = Capacity_1 * (1 - bess_annual_capacity_fade)^(t-1)
+    
+    Capacity resets to 100% after replacement occurs.
+    """
+    # Analysis period
+    analysis_period_years: int = 20  # Fixed at 20 years per spec
+    
+    # PV degradation (spec: 0.7%/year default)
+    pv_annual_degradation_rate: float = 0.007  # 0.7%/year
+    pv_module_lifetime_years: int = 30  # Beyond 20-year analysis period
+    
+    # BESS degradation (spec: 2.0%/year capacity fade)
+    bess_annual_capacity_fade: float = 0.020  # 2.0%/year of remaining usable capacity
+    bess_annual_efficiency_degradation: float = 0.001  # 0.1%/year (optional)
+    bess_min_soh_pct: float = 0.70  # 70% minimum State of Health
     bess_replacement_year: int = 10
-    bess_replacement_cost_pct: float = 0.70  # 70% of initial BESS CAPEX
+    bess_replacement_cost_pct: float = 0.80  # 80% of initial BESS CAPEX (per spec)
     
     def get_pv_capacity_factor(self, year: int) -> float:
-        """Get PV capacity degradation factor for given year (1-indexed)"""
-        if year == 0:
+        """
+        Get PV capacity degradation factor for given year (1-indexed).
+        
+        Formula: E_t = E1 * (1 - pv_annual_degradation_rate)^(t-1)
+        
+        Args:
+            year: Operating year (0 = construction, 1-20 = operations)
+            
+        Returns:
+            Capacity factor (1.0 = 100% of Year 1 capacity)
+        """
+        if year <= 0:
             return 1.0
-        return (1 - self.pv_annual_degradation_pct) ** (year - 1)
+        # Apply degradation from Year 1 onwards
+        return (1 - self.pv_annual_degradation_rate) ** (year - 1)
     
     def get_bess_capacity_factor(self, year: int) -> float:
-        """Get BESS capacity degradation factor for given year (1-indexed)"""
-        if year == 0:
+        """
+        Get BESS usable capacity factor for given year (1-indexed).
+        
+        Formula: Capacity_t = Capacity_1 * (1 - bess_annual_capacity_fade)^(t-1)
+        
+        Capacity resets to 100% after replacement in bess_replacement_year.
+        
+        Args:
+            year: Operating year (0 = construction, 1-20 = operations)
+            
+        Returns:
+            Capacity factor (1.0 = 100% of initial usable capacity)
+        """
+        if year <= 0:
             return 1.0
         
-        # Calculate years since last replacement/initial
-        years_since_install = year if year < self.bess_replacement_year else (year - self.bess_replacement_year)
+        # Determine years since last installation/replacement
+        if year <= self.bess_replacement_year:
+            years_since_install = year
+        else:
+            # Capacity resets to 100% after replacement
+            years_since_install = year - self.bess_replacement_year
         
-        factor = (1 - self.bess_annual_degradation_pct) ** (years_since_install - 1) if years_since_install > 0 else 1.0
+        # Apply degradation formula
+        if years_since_install <= 0:
+            factor = 1.0
+        else:
+            factor = (1 - self.bess_annual_capacity_fade) ** (years_since_install - 1)
+        
+        # Enforce minimum SOH threshold
         return max(factor, self.bess_min_soh_pct)
+    
+    def get_bess_efficiency_factor(self, year: int) -> float:
+        """
+        Get BESS round-trip efficiency factor for given year.
+        
+        Args:
+            year: Operating year
+            
+        Returns:
+            Efficiency factor (1.0 = 100% of initial efficiency, typically ~85-90%)
+        """
+        if year <= 0:
+            return 1.0
+        
+        # Efficiency also resets after replacement
+        if year <= self.bess_replacement_year:
+            years_since_install = year
+        else:
+            years_since_install = year - self.bess_replacement_year
+        
+        if years_since_install <= 0:
+            return 1.0
+        return (1 - self.bess_annual_efficiency_degradation) ** (years_since_install - 1)
 
 
 @dataclass
 class ReplacementCapexInputs:
-    """Major equipment replacement and overhaul costs"""
-    # PV inverters
-    inverter_replacement_year: int = 12
-    inverter_replacement_cost_pct: float = 0.15  # 15% of PV CAPEX
+    """
+    Major equipment replacement, overhaul, salvage value, and decommissioning.
     
-    # Irrigation pumps
-    pump_replacement_year: int = 10
-    pump_replacement_cost_pct: float = 0.30  # 30% of irrigation CAPEX
+    Implements component-specific lifetimes with replacement at multiples
+    within the 20-year analysis horizon. Replacement costs use fraction
+    of initial CAPEX to account for technology cost improvements.
     
-    # Cold storage
-    cold_storage_overhaul_year: int = 12
-    cold_storage_overhaul_cost_pct: float = 0.25  # 25% of cold storage CAPEX
+    Terminal value = salvage_value - decommissioning_cost (in Year 20)
+    """
+    # === Component Lifetimes (years) ===
+    pv_module_lifetime_years: int = 30  # Beyond 20-year analysis (no replacement)
+    inverter_lifetime_years: int = 10
+    bess_battery_lifetime_years: int = 10
+    bess_pcs_lifetime_years: int = 15
+    irrigation_pump_lifetime_years: int = 10
+    raw_water_pump_lifetime_years: int = 10
+    cold_room_equipment_lifetime_years: int = 12
+    processing_equipment_lifetime_years: int = 12
     
-    # Processing line
-    processing_overhaul_year: int = 12
-    processing_overhaul_cost_pct: float = 0.25  # 25% of processing CAPEX
+    # === Replacement Cost Fractions (of initial CAPEX) ===
+    inverter_replacement_fraction: float = 0.70  # 70% of initial inverter cost
+    bess_replacement_fraction: float = 0.80  # 80% of initial BESS CAPEX
+    bess_pcs_replacement_fraction: float = 0.70  # 70% of PCS cost
+    pump_replacement_fraction: float = 0.70  # 70% of pump cost
+    cold_room_replacement_fraction: float = 0.70  # 70% of cold room equipment
+    processing_replacement_fraction: float = 0.70  # 70% of processing equipment
     
-    # Residual value at end of project
-    residual_value_pct: float = 0.10  # 10% of total initial CAPEX
+    # === Salvage Value & Decommissioning ===
+    salvage_fraction_pv_structure: float = 0.15  # 10-20% of PV structure at Year 20
+    salvage_fraction_bess_equipment: float = 0.10  # 10% of BESS equipment
+    salvage_fraction_other: float = 0.10  # 10% of other equipment
+    decommissioning_cost_fraction: float = 0.03  # 2-5% of initial CAPEX
     
-    def calculate_year_capex(self, year: int, pv_capex: float, irrigation_capex: float, 
-                            cold_storage_capex: float, bess_capex: float, 
-                            bess_replacement_cost_pct: float, bess_replacement_year: int,
-                            total_initial_capex: float) -> float:
-        """Calculate replacement/overhaul CAPEX for a given year"""
-        capex = 0.0
+    def get_replacement_years(self, lifetime: int, analysis_period: int = 20) -> list:
+        """
+        Get list of years when replacement occurs within analysis period.
+        
+        Args:
+            lifetime: Component lifetime in years
+            analysis_period: Total analysis period (default 20 years)
+            
+        Returns:
+            List of years when replacement occurs (empty if lifetime > analysis_period)
+        """
+        if lifetime <= 0 or lifetime > analysis_period:
+            return []
+        
+        years = []
+        year = lifetime
+        while year <= analysis_period:
+            years.append(year)
+            year += lifetime
+        return years
+    
+    def calculate_year_capex(self, year: int, 
+                            pv_capex: float, 
+                            inverter_capex: float,
+                            irrigation_capex: float, 
+                            cold_storage_capex: float, 
+                            processing_capex: float,
+                            bess_capex: float, 
+                            bess_pcs_capex: float,
+                            total_initial_capex: float,
+                            analysis_period: int = 20) -> dict:
+        """
+        Calculate replacement/overhaul CAPEX for a given year.
+        
+        Args:
+            year: Operating year (1-20)
+            pv_capex: PV module CAPEX (excluding inverters)
+            inverter_capex: Inverter CAPEX
+            irrigation_capex: Irrigation system CAPEX (including pumps)
+            cold_storage_capex: Cold storage facility CAPEX
+            processing_capex: Processing equipment CAPEX
+            bess_capex: BESS battery pack CAPEX
+            bess_pcs_capex: BESS PCS/inverter CAPEX
+            total_initial_capex: Total initial project CAPEX
+            analysis_period: Analysis period in years
+            
+        Returns:
+            Dict with itemized replacement CAPEX and total
+        """
+        items = {}
         
         # Inverter replacement
-        if year == self.inverter_replacement_year:
-            capex += pv_capex * self.inverter_replacement_cost_pct
+        if year in self.get_replacement_years(self.inverter_lifetime_years, analysis_period):
+            items['Inverter Replacement'] = inverter_capex * self.inverter_replacement_fraction
         
-        # Pump replacement
-        if year == self.pump_replacement_year:
-            capex += irrigation_capex * self.pump_replacement_cost_pct
+        # BESS battery replacement
+        if year in self.get_replacement_years(self.bess_battery_lifetime_years, analysis_period):
+            items['BESS Battery Replacement'] = bess_capex * self.bess_replacement_fraction
         
-        # Cold storage overhaul
-        if year == self.cold_storage_overhaul_year:
-            capex += cold_storage_capex * self.cold_storage_overhaul_cost_pct
+        # BESS PCS replacement
+        if year in self.get_replacement_years(self.bess_pcs_lifetime_years, analysis_period):
+            items['BESS PCS Replacement'] = bess_pcs_capex * self.bess_pcs_replacement_fraction
         
-        # Processing overhaul (using portion of cold storage CAPEX as proxy)
-        if year == self.processing_overhaul_year and year != self.cold_storage_overhaul_year:
-            capex += cold_storage_capex * 0.5 * self.processing_overhaul_cost_pct
+        # Irrigation pump replacement (assume 40% of irrigation CAPEX is pumps)
+        pump_capex = irrigation_capex * 0.40
+        if year in self.get_replacement_years(self.irrigation_pump_lifetime_years, analysis_period):
+            items['Irrigation Pump Replacement'] = pump_capex * self.pump_replacement_fraction
         
-        # BESS replacement
-        if year == bess_replacement_year:
-            capex += bess_capex * bess_replacement_cost_pct
+        # Raw water pump replacement (included in irrigation but separate lifetime)
+        raw_pump_capex = irrigation_capex * 0.15
+        if year in self.get_replacement_years(self.raw_water_pump_lifetime_years, analysis_period):
+            items['Raw Water Pump Replacement'] = raw_pump_capex * self.pump_replacement_fraction
         
-        # Residual value at year 20 (negative CAPEX = cash inflow)
-        if year == 20:
-            capex -= total_initial_capex * self.residual_value_pct
+        # Cold room equipment replacement
+        if year in self.get_replacement_years(self.cold_room_equipment_lifetime_years, analysis_period):
+            items['Cold Room Equipment Replacement'] = cold_storage_capex * self.cold_room_replacement_fraction
         
-        return capex
+        # Processing equipment replacement
+        if year in self.get_replacement_years(self.processing_equipment_lifetime_years, analysis_period):
+            items['Processing Equipment Replacement'] = processing_capex * self.processing_replacement_fraction
+        
+        # Terminal value in final year (salvage - decommissioning)
+        if year == analysis_period:
+            # Salvage values (positive = cash inflow)
+            salvage_pv = pv_capex * self.salvage_fraction_pv_structure
+            salvage_bess = (bess_capex + bess_pcs_capex) * self.salvage_fraction_bess_equipment
+            salvage_other = (irrigation_capex + cold_storage_capex + processing_capex) * self.salvage_fraction_other
+            total_salvage = salvage_pv + salvage_bess + salvage_other
+            items['Salvage Value'] = -total_salvage  # Negative = cash inflow
+            
+            # Decommissioning cost (positive = cash outflow)
+            decommissioning = total_initial_capex * self.decommissioning_cost_fraction
+            items['Decommissioning Cost'] = decommissioning
+        
+        # Calculate total
+        items['Total'] = sum(v for k, v in items.items() if k != 'Total')
+        
+        return items
+    
+    def calculate_year_capex_total(self, year: int, 
+                                   pv_capex: float, 
+                                   inverter_capex: float,
+                                   irrigation_capex: float, 
+                                   cold_storage_capex: float, 
+                                   processing_capex: float,
+                                   bess_capex: float, 
+                                   bess_pcs_capex: float,
+                                   total_initial_capex: float,
+                                   analysis_period: int = 20) -> float:
+        """Convenience method to get just the total replacement CAPEX."""
+        items = self.calculate_year_capex(
+            year, pv_capex, inverter_capex, irrigation_capex, 
+            cold_storage_capex, processing_capex, bess_capex, 
+            bess_pcs_capex, total_initial_capex, analysis_period
+        )
+        return items.get('Total', 0.0)
 
 
 @dataclass
 class InflationInputs:
-    """Inflation and price escalation parameters for Ethiopia"""
-    # Analysis mode
-    use_nominal_cashflows: bool = True
+    """
+    Inflation and price escalation parameters for Ethiopia.
     
-    # General macro
-    general_inflation_pct: float = 0.10  # 10%/year
-    discount_rate_nominal_pct: float = 0.12  # 12%/year nominal
-    discount_rate_real_pct: float = 0.08  # 8%/year real
+    Supports both 'real' (constant price) and 'nominal' (escalated) analysis modes.
+    When analysis_mode == 'nominal':
+        - revenue_t = revenue_year1 * (1 + escalation_rate)^(t-1)
+        - opex_t = opex_year1 * (1 + opex_escalation_rate)^(t-1)
+    When analysis_mode == 'real':
+        - All values in constant Year 1 prices
+    """
+    # Analysis mode: "real" or "nominal"
+    analysis_mode: str = "nominal"  # "real" = constant prices, "nominal" = with escalation
     
-    # Cost-side escalation
-    wage_escalation_pct: float = 0.07  # 7%/year
-    om_material_escalation_pct: float = 0.05  # 5%/year
-    land_lease_escalation_pct: float = 0.03  # 3%/year
+    # General macro parameters
+    general_inflation_rate: float = 0.10  # 10%/year (Ethiopia recent trend)
+    discount_rate_real: float = 0.08  # 8%/year real discount rate
+    discount_rate_nominal: float = 0.12  # 12%/year nominal discount rate
     
-    # Revenue-side escalation
-    electricity_tariff_escalation_pct: float = 0.05  # 5%/year
-    crop_price_escalation_pct: float = 0.04  # 4%/year
-    processed_product_price_escalation_pct: float = 0.04  # 4%/year
+    # === Cost-side escalation rates ===
+    opex_escalation_rate: float = 0.06  # 6%/year blended O&M escalation
+    wage_escalation_rate: float = 0.07  # 7%/year wages
+    material_escalation_rate: float = 0.05  # 5%/year materials/spares
+    land_lease_escalation_rate: float = 0.03  # 3%/year land lease
+    
+    # === Revenue-side escalation rates ===
+    energy_tariff_escalation_rate: float = 0.05  # 5%/year electricity tariff
+    crop_price_escalation_rate: float = 0.04  # 4%/year farm-gate crop prices
+    processed_price_escalation_rate: float = 0.04  # 4%/year processed product prices
+    
+    # Legacy compatibility
+    @property
+    def use_nominal_cashflows(self) -> bool:
+        return self.analysis_mode == "nominal"
+    
+    @property
+    def discount_rate_nominal_pct(self) -> float:
+        return self.discount_rate_nominal
+    
+    @property
+    def discount_rate_real_pct(self) -> float:
+        return self.discount_rate_real
+    
+    @property
+    def electricity_tariff_escalation_pct(self) -> float:
+        return self.energy_tariff_escalation_rate
+    
+    @property
+    def crop_price_escalation_pct(self) -> float:
+        return self.crop_price_escalation_rate
+    
+    @property
+    def processed_product_price_escalation_pct(self) -> float:
+        return self.processed_price_escalation_rate
+    
+    @property
+    def wage_escalation_pct(self) -> float:
+        return self.wage_escalation_rate
+    
+    @property
+    def om_material_escalation_pct(self) -> float:
+        return self.material_escalation_rate
     
     def get_escalation_factor(self, base_rate: float, year: int) -> float:
-        """Get escalation factor for given year (1-indexed)"""
-        if not self.use_nominal_cashflows or year == 0:
+        """
+        Get compounded escalation factor for given year.
+        
+        Formula: (1 + rate)^(t-1) for years 1-20
+        Returns 1.0 for Year 0 or if in 'real' analysis mode.
+        
+        Args:
+            base_rate: Annual escalation rate (e.g., 0.05 = 5%)
+            year: Operating year (1-indexed)
+            
+        Returns:
+            Escalation factor (1.0 = no escalation)
+        """
+        if self.analysis_mode == "real" or year <= 0:
             return 1.0
         return (1 + base_rate) ** (year - 1)
     
     def get_discount_rate(self) -> float:
-        """Get appropriate discount rate based on analysis mode"""
-        return self.discount_rate_nominal_pct if self.use_nominal_cashflows else self.discount_rate_real_pct
+        """Get appropriate discount rate based on analysis mode."""
+        return self.discount_rate_nominal if self.analysis_mode == "nominal" else self.discount_rate_real
+    
+    def get_analysis_mode_label(self) -> str:
+        """Get human-readable analysis mode label for display."""
+        if self.analysis_mode == "nominal":
+            return "Nominal (with inflation & escalation)"
+        else:
+            return "Real (constant prices)"
 
 
 # Business model presets
@@ -505,10 +1024,21 @@ def calculate_cashflows(capex_breakdown: Dict[str, float],
     opex_base = opex_inputs.calculate_total()
     
     # Extract component CAPEX values for replacement calculations
-    pv_capex = capex_breakdown['APV System']
-    bess_capex = capex_breakdown['BESS']
-    irrigation_capex = capex_breakdown['Irrigation System']
-    cold_storage_capex = capex_breakdown['Cold Storage & Processing']
+    # Use detailed breakdown if available, otherwise estimate from totals
+    pv_modules = capex_breakdown.get('_pv_modules', capex_breakdown['APV System'] * 0.5)
+    inverters = capex_breakdown.get('_inverters', capex_breakdown['APV System'] * 0.15)
+    bess_batteries = capex_breakdown.get('_bess_batteries', capex_breakdown['BESS'] * 0.75)
+    bess_pcs = capex_breakdown.get('_bess_pcs', capex_breakdown['BESS'] * 0.15)
+    cold_storage = capex_breakdown.get('_cold_storage', capex_breakdown.get('Cold Storage', 200000))
+    processing = capex_breakdown.get('_processing', capex_breakdown.get('Packhouse & Processing', 150000))
+    
+    # Get irrigation subtotal
+    irrigation_capex = capex_breakdown.get('Irrigation Subtotal', 
+                                           capex_breakdown.get('On-Farm Irrigation', 0) + 
+                                           capex_breakdown.get('Raw Water Infrastructure', 0))
+    if irrigation_capex == 0:
+        # Fallback for legacy format
+        irrigation_capex = capex_breakdown.get('Irrigation System', 1000000)
     
     # Initialize cash flow DataFrame with additional columns
     years = financing.asset_life_years + 1
@@ -544,12 +1074,12 @@ def calculate_cashflows(capex_breakdown: Dict[str, float],
     
     for year in range(1, years):
         # ===== DEGRADATION =====
-        # PV energy degradation
+        # PV energy degradation: E_t = E1 * (1 - degradation_rate)^(t-1)
         pv_factor = degradation.get_pv_capacity_factor(year)
         pv_energy_year = pv_generation_base * pv_factor
         cf.loc[year, 'PV_Energy_MWh'] = pv_energy_year
         
-        # BESS capacity degradation
+        # BESS capacity degradation (resets after replacement)
         bess_factor = degradation.get_bess_capacity_factor(year)
         bess_capacity_year = 4.0 * bess_factor  # Base 4 MWh
         cf.loc[year, 'BESS_Capacity_MWh'] = bess_capacity_year
@@ -603,11 +1133,20 @@ def calculate_cashflows(capex_breakdown: Dict[str, float],
         cf.loc[year, 'OPEX'] = total_opex
         
         # ===== REPLACEMENT CAPEX =====
-        repl_capex = replacement.calculate_year_capex(
-            year, pv_capex, irrigation_capex, cold_storage_capex, bess_capex,
-            degradation.bess_replacement_cost_pct, degradation.bess_replacement_year,
-            total_capex
+        # Use new method with component-specific CAPEX values
+        repl_capex_items = replacement.calculate_year_capex(
+            year=year,
+            pv_capex=pv_modules,
+            inverter_capex=inverters,
+            irrigation_capex=irrigation_capex,
+            cold_storage_capex=cold_storage,
+            processing_capex=processing,
+            bess_capex=bess_batteries,
+            bess_pcs_capex=bess_pcs,
+            total_initial_capex=total_capex,
+            analysis_period=degradation.analysis_period_years
         )
+        repl_capex = repl_capex_items.get('Total', 0.0)
         cf.loc[year, 'Replacement_CAPEX'] = repl_capex
         
         # ===== FINANCIAL CALCULATIONS =====
@@ -655,7 +1194,15 @@ def calculate_cashflows(capex_breakdown: Dict[str, float],
 def compute_kpis(cashflows: pd.DataFrame, discount_rate: float = 0.10, 
                 inflation: InflationInputs = None) -> Dict[str, float]:
     """
-    Compute key performance indicators
+    Compute key performance indicators for the project.
+    
+    IRR Definitions per spec:
+    - Project IRR (pre-financing): Calculated on FCF to project (FCFF)
+        FCFF = Revenue - OPEX - CAPEX (including replacements)
+        Does NOT subtract interest or principal payments
+        
+    - Equity IRR (post-debt): Calculated on FCF to equity (FCFE)
+        FCFE = FCFF - Interest - Principal + New Debt Drawdowns
     
     Args:
         cashflows: DataFrame with annual cash flows
@@ -663,35 +1210,44 @@ def compute_kpis(cashflows: pd.DataFrame, discount_rate: float = 0.10,
         inflation: Inflation parameters (uses appropriate nominal/real discount rate)
         
     Returns:
-        Dictionary of KPIs
+        Dictionary of KPIs with clear labels
     """
     # Use inflation-appropriate discount rate if provided
     if inflation is not None:
         effective_discount_rate = inflation.get_discount_rate()
-        analysis_mode = 'Nominal' if inflation.use_nominal_cashflows else 'Real'
+        analysis_mode = inflation.get_analysis_mode_label()
     else:
         effective_discount_rate = discount_rate
-        analysis_mode = 'Real'
+        analysis_mode = 'Real (constant prices)'
     
     fcff = cashflows['FCFF'].values
     fcfe = cashflows['FCFE'].values
     
-    # IRRs
+    # === IRR Calculations ===
+    # Project IRR (pre-financing) - based on FCFF
     try:
         project_irr = npf.irr(fcff)
     except:
         project_irr = np.nan
     
+    # Equity IRR (post-debt) - based on FCFE
     try:
         equity_irr = npf.irr(fcfe)
     except:
         equity_irr = np.nan
     
-    # NPVs
+    # Verify: Equity IRR should differ from Project IRR when leverage is present
+    # (This is a mathematical check, not enforced but noted)
+    leverage_present = cashflows['Interest'].sum() > 0 or cashflows['Debt_Principal'].sum() > 0
+    irr_difference_valid = True
+    if leverage_present and not np.isnan(project_irr) and not np.isnan(equity_irr):
+        irr_difference_valid = abs(equity_irr - project_irr) > 0.001  # Should differ by > 0.1%
+    
+    # === NPV Calculations ===
     npv_project = npf.npv(effective_discount_rate, fcff)
     npv_equity = npf.npv(effective_discount_rate, fcfe)
     
-    # Payback periods
+    # === Payback Period ===
     cum_fcff = np.cumsum(fcff)
     cum_fcfe = np.cumsum(fcfe)
     
@@ -701,22 +1257,35 @@ def compute_kpis(cashflows: pd.DataFrame, discount_rate: float = 0.10,
     payback_equity = np.where(cum_fcfe >= 0)[0]
     payback_equity = payback_equity[0] if len(payback_equity) > 0 else np.nan
     
-    # DSCR statistics
+    # === DSCR Statistics ===
     dscr_values = cashflows.loc[cashflows['DSCR'] > 0, 'DSCR']
     min_dscr = dscr_values.min() if len(dscr_values) > 0 else np.nan
     avg_dscr = dscr_values.mean() if len(dscr_values) > 0 else np.nan
     
     return {
-        'Project IRR': project_irr,
-        'Equity IRR': equity_irr,
+        # IRR with clear labels per spec
+        'Project IRR (pre-financing)': project_irr,
+        'Equity IRR (post-debt)': equity_irr,
+        'Project IRR': project_irr,  # Legacy compatibility
+        'Equity IRR': equity_irr,  # Legacy compatibility
+        
+        # NPV
         'NPV': npv_project,
         'Equity NPV': npv_equity,
+        
+        # Payback
         'Payback Period (years)': payback_project,
         'Equity Payback (years)': payback_equity,
+        
+        # DSCR
         'Min DSCR': min_dscr,
         'Avg DSCR': avg_dscr,
+        
+        # Metadata
         'Discount Rate': effective_discount_rate,
         'Analysis Mode': analysis_mode,
+        'Leverage Present': leverage_present,
+        'IRR Difference Valid': irr_difference_valid,
     }
 
 
@@ -750,36 +1319,40 @@ def calculate_scenario_comparison(base_inputs: Dict,
         },
         'Pessimistic': {
             'degradation': DegradationInputs(
-                pv_annual_degradation_pct=degradation.pv_annual_degradation_pct * 1.4,  # Worse degradation
-                bess_annual_degradation_pct=degradation.bess_annual_degradation_pct * 1.3,
-                bess_replacement_year=degradation.bess_replacement_year - 2,  # Earlier replacement
+                pv_annual_degradation_rate=degradation.pv_annual_degradation_rate * 1.4,  # Worse degradation
+                bess_annual_capacity_fade=degradation.bess_annual_capacity_fade * 1.3,
+                bess_replacement_year=max(5, degradation.bess_replacement_year - 2),  # Earlier replacement
+                bess_min_soh_pct=degradation.bess_min_soh_pct,
+                bess_replacement_cost_pct=degradation.bess_replacement_cost_pct,
             ),
             'inflation': InflationInputs(
-                use_nominal_cashflows=inflation.use_nominal_cashflows,
-                general_inflation_pct=inflation.general_inflation_pct * 1.2,  # Higher inflation
-                discount_rate_nominal_pct=inflation.discount_rate_nominal_pct * 1.15,
-                discount_rate_real_pct=inflation.discount_rate_real_pct,
-                wage_escalation_pct=inflation.wage_escalation_pct * 1.3,  # Faster cost escalation
-                om_material_escalation_pct=inflation.om_material_escalation_pct * 1.4,
-                electricity_tariff_escalation_pct=inflation.electricity_tariff_escalation_pct * 0.7,  # Slower revenue growth
-                crop_price_escalation_pct=inflation.crop_price_escalation_pct * 0.6,
+                analysis_mode=inflation.analysis_mode,
+                general_inflation_rate=inflation.general_inflation_rate * 1.2,  # Higher inflation
+                discount_rate_nominal=inflation.discount_rate_nominal * 1.15,
+                discount_rate_real=inflation.discount_rate_real,
+                wage_escalation_rate=inflation.wage_escalation_rate * 1.3,  # Faster cost escalation
+                material_escalation_rate=inflation.material_escalation_rate * 1.4,
+                energy_tariff_escalation_rate=inflation.energy_tariff_escalation_rate * 0.7,  # Slower revenue growth
+                crop_price_escalation_rate=inflation.crop_price_escalation_rate * 0.6,
             ),
         },
         'Optimistic': {
             'degradation': DegradationInputs(
-                pv_annual_degradation_pct=degradation.pv_annual_degradation_pct * 0.6,  # Better degradation
-                bess_annual_degradation_pct=degradation.bess_annual_degradation_pct * 0.7,
-                bess_replacement_year=degradation.bess_replacement_year + 2,  # Later replacement
+                pv_annual_degradation_rate=degradation.pv_annual_degradation_rate * 0.6,  # Better degradation
+                bess_annual_capacity_fade=degradation.bess_annual_capacity_fade * 0.7,
+                bess_replacement_year=min(15, degradation.bess_replacement_year + 2),  # Later replacement
+                bess_min_soh_pct=degradation.bess_min_soh_pct,
+                bess_replacement_cost_pct=degradation.bess_replacement_cost_pct,
             ),
             'inflation': InflationInputs(
-                use_nominal_cashflows=inflation.use_nominal_cashflows,
-                general_inflation_pct=inflation.general_inflation_pct * 0.8,  # Lower inflation
-                discount_rate_nominal_pct=inflation.discount_rate_nominal_pct * 0.9,
-                discount_rate_real_pct=inflation.discount_rate_real_pct,
-                wage_escalation_pct=inflation.wage_escalation_pct * 0.9,  # Slower cost escalation
-                om_material_escalation_pct=inflation.om_material_escalation_pct * 0.8,
-                electricity_tariff_escalation_pct=inflation.electricity_tariff_escalation_pct * 1.2,  # Faster revenue growth
-                crop_price_escalation_pct=inflation.crop_price_escalation_pct * 1.3,
+                analysis_mode=inflation.analysis_mode,
+                general_inflation_rate=inflation.general_inflation_rate * 0.8,  # Lower inflation
+                discount_rate_nominal=inflation.discount_rate_nominal * 0.9,
+                discount_rate_real=inflation.discount_rate_real,
+                wage_escalation_rate=inflation.wage_escalation_rate * 0.9,  # Slower cost escalation
+                material_escalation_rate=inflation.material_escalation_rate * 0.8,
+                energy_tariff_escalation_rate=inflation.energy_tariff_escalation_rate * 1.2,  # Faster revenue growth
+                crop_price_escalation_rate=inflation.crop_price_escalation_rate * 1.3,
             ),
         },
     }
@@ -1263,30 +1836,58 @@ def main():
                 format="%.1f",
                 help="Value-added product price escalation"
             ) / 100
-    
     # ============================================================
     # MAIN AREA: Calculations and Outputs
     # ============================================================
     
-    # Build input objects
+    # Build input objects using defaults with UI overrides
+    # CapexInputs now has comprehensive defaults, we override key items from UI
     capex_inputs = CapexInputs(
         apv_capacity_kwp=apv_capacity * 1000,
-        apv_unit_cost=apv_unit_cost,
         bess_capacity_kwh=bess_capacity * 1000,
-        bess_unit_cost=bess_unit_cost,
+        bess_power_kw=bess_capacity * 1000 * 0.3,  # Assume 0.3C rate
         irrigation_area_ha=470,
-        irrigation_unit_cost=irr_unit_cost,
-        cold_storage_processing=cold_storage_capex,
-        electrical_infra_ems=electrical_capex,
-        civil_works=civil_capex,
+        # Use detailed defaults for most items, override totals to match UI inputs
+        # Scale unit costs
+        pv_module_cost_per_kwp=apv_unit_cost * 0.4,  # 40% of total is modules
+        mounting_structure_cost_per_kwp=apv_unit_cost * 0.25,  # 25% structures
+        inverter_cost_per_kwp=apv_unit_cost * 0.15,  # 15% inverters
+        dc_cabling_cost_per_kwp=apv_unit_cost * 0.07,  # 7% DC cabling
+        bess_battery_cost_per_kwh=bess_unit_cost * 0.75,  # 75% battery cells
+        bess_pcs_cost_per_kw=bess_unit_cost * 0.3,  # 30% PCS (per kW, not kWh)
+        irrigation_distribution_per_ha=irr_unit_cost * 0.7,  # 70% distribution
+        drip_sprinkler_per_ha=irr_unit_cost * 0.2,  # 20% drip
+        cold_storage_building=cold_storage_capex * 0.6,  # 60% building
+        refrigeration_units=cold_storage_capex * 0.4,  # 40% equipment
+        ac_cabling_mv_transformer=electrical_capex * 0.5,  # 50% AC/MV
+        switchgear_protection=electrical_capex * 0.3,  # 30% switchgear
+        scada_ems_weather=electrical_capex * 0.2,  # 20% SCADA
+        site_prep_civil_roads=civil_capex * 0.7,  # 70% civil
+        fencing_security_systems=civil_capex * 0.3,  # 30% security
     )
     
+    # OpexInputs now has defaults, UI values override key items
     opex_inputs = OpexInputs(
-        apv_om=apv_om,
-        bess_om=bess_om,
-        irrigation_om=irr_om,
-        cold_storage_processing_om=storage_om,
-        staff_admin=staff_cost,
+        # Energy system - scale from single input
+        pv_cleaning_inspection=apv_om * 0.5,
+        pv_spare_parts=apv_om * 0.3,
+        inverter_maintenance=apv_om * 0.2,
+        bess_maintenance=bess_om * 0.8,
+        bess_monitoring=bess_om * 0.2,
+        # Irrigation
+        pump_maintenance_spares=irr_om * 0.4,
+        filter_valve_replacement=irr_om * 0.3,
+        drip_lateral_replacement=irr_om * 0.3,
+        # Cold storage / processing
+        cold_storage_labour=storage_om * 0.3,
+        processing_labour=storage_om * 0.2,
+        consumables_packaging=storage_om * 0.2,
+        equipment_maintenance=storage_om * 0.3,
+        # Staff and admin
+        permanent_labour=staff_cost * 0.3,
+        seasonal_labour=staff_cost * 0.2,
+        management_admin=staff_cost * 0.3,
+        office_utilities=staff_cost * 0.2,
     )
     
     revenue_inputs = RevenueInputs(
@@ -1317,41 +1918,48 @@ def main():
         discount_rate=discount_rate,
     )
     
-    # NEW: Build degradation inputs
+    # Build degradation inputs (using new attribute names)
     degradation_inputs = DegradationInputs(
-        pv_annual_degradation_pct=pv_degradation,
-        pv_useful_lifetime_years=int(pv_lifetime),
-        bess_annual_degradation_pct=bess_degradation,
+        pv_annual_degradation_rate=pv_degradation,
+        pv_module_lifetime_years=int(pv_lifetime) if 'pv_lifetime' in dir() else 30,
+        bess_annual_capacity_fade=bess_degradation,
+        bess_annual_efficiency_degradation=0.001,  # 0.1%/year default
         bess_min_soh_pct=bess_min_soh,
-        bess_replacement_year= int(bess_replacement_year),
+        bess_replacement_year=int(bess_replacement_year),
         bess_replacement_cost_pct=bess_replacement_cost_pct,
     )
     
-    # NEW: Build replacement CAPEX inputs
+    # Build replacement CAPEX inputs (using new attribute names)
     replacement_inputs = ReplacementCapexInputs(
-        inverter_replacement_year=int(inverter_repl_year),
-        inverter_replacement_cost_pct=inverter_repl_cost_pct,
-        pump_replacement_year=int(pump_repl_year),
-        pump_replacement_cost_pct=pump_repl_cost_pct,
-        cold_storage_overhaul_year=int(cold_storage_overhaul_year),
-        cold_storage_overhaul_cost_pct=cold_storage_overhaul_pct,
-        processing_overhaul_year=int(processing_overhaul_year),
-        processing_overhaul_cost_pct=processing_overhaul_pct,
-        residual_value_pct=residual_value_pct,
+        inverter_lifetime_years=int(inverter_repl_year) if 'inverter_repl_year' in dir() else 10,
+        bess_battery_lifetime_years=int(bess_replacement_year) if 'bess_replacement_year' in dir() else 10,
+        irrigation_pump_lifetime_years=int(pump_repl_year) if 'pump_repl_year' in dir() else 10,
+        cold_room_equipment_lifetime_years=int(cold_storage_overhaul_year) if 'cold_storage_overhaul_year' in dir() else 12,
+        processing_equipment_lifetime_years=int(processing_overhaul_year) if 'processing_overhaul_year' in dir() else 12,
+        inverter_replacement_fraction=inverter_repl_cost_pct if 'inverter_repl_cost_pct' in dir() else 0.70,
+        bess_replacement_fraction=bess_replacement_cost_pct if 'bess_replacement_cost_pct' in dir() else 0.80,
+        pump_replacement_fraction=pump_repl_cost_pct if 'pump_repl_cost_pct' in dir() else 0.70,
+        cold_room_replacement_fraction=cold_storage_overhaul_pct if 'cold_storage_overhaul_pct' in dir() else 0.70,
+        processing_replacement_fraction=processing_overhaul_pct if 'processing_overhaul_pct' in dir() else 0.70,
+        salvage_fraction_pv_structure=residual_value_pct if 'residual_value_pct' in dir() else 0.15,
+        salvage_fraction_bess_equipment=0.10,
+        salvage_fraction_other=0.10,
+        decommissioning_cost_fraction=0.03,
     )
     
-    # NEW: Build inflation inputs
+    # Build inflation inputs (using new attribute names)
     inflation_inputs = InflationInputs(
-        use_nominal_cashflows=use_nominal,
-        general_inflation_pct=general_inflation,
-        discount_rate_nominal_pct=discount_rate_nominal if use_nominal else 0.12,
-        discount_rate_real_pct=discount_rate_real if not use_nominal else 0.08,
-        wage_escalation_pct=wage_esc,
-        om_material_escalation_pct=material_esc,
-        land_lease_escalation_pct=land_esc,
-        electricity_tariff_escalation_pct=tariff_esc,
-        crop_price_escalation_pct=crop_price_esc,
-        processed_product_price_escalation_pct=processed_esc,
+        analysis_mode="nominal" if use_nominal else "real",
+        general_inflation_rate=general_inflation,
+        discount_rate_nominal=discount_rate_nominal if use_nominal else 0.12,
+        discount_rate_real=discount_rate_real if not use_nominal else 0.08,
+        opex_escalation_rate=(wage_esc + material_esc) / 2,  # Blended rate
+        wage_escalation_rate=wage_esc,
+        material_escalation_rate=material_esc,
+        land_lease_escalation_rate=land_esc,
+        energy_tariff_escalation_rate=tariff_esc,
+        crop_price_escalation_rate=crop_price_esc,
+        processed_price_escalation_rate=processed_esc,
     )
     
     # Calculate with new parameters
@@ -1383,11 +1991,11 @@ def main():
     col1, col2, col3, col4 = st.columns(4)
     
     with col1:
-        st.metric("Project IRR", f"{kpis['Project IRR']*100:.2f}%" if not np.isnan(kpis['Project IRR']) else "N/A")
-        st.metric("NPV", f"${kpis['NPV']/1e6:.2f}M")
+        st.metric("Project IRR (pre-financing)", f"{kpis['Project IRR']*100:.2f}%" if not np.isnan(kpis['Project IRR']) else "N/A")
+        st.metric("Project NPV", f"${kpis['NPV']/1e6:.2f}M")
     
     with col2:
-        st.metric("Equity IRR", f"{kpis['Equity IRR']*100:.2f}%" if not np.isnan(kpis['Equity IRR']) else "N/A")
+        st.metric("Equity IRR (post-debt)", f"{kpis['Equity IRR']*100:.2f}%" if not np.isnan(kpis['Equity IRR']) else "N/A")
         st.metric("Equity NPV", f"${kpis['Equity NPV']/1e6:.2f}M")
     
     with col3:
@@ -1408,24 +2016,29 @@ def main():
     tab1, tab2, tab3 = st.tabs(["CAPEX Breakdown", "Revenue Breakdown", "Financing Structure"])
     
     with tab1:
+        # Filter out internal component items (prefixed with underscore)
+        display_capex = {k: v for k, v in capex_breakdown.items() if not k.startswith('_')}
         capex_df = pd.DataFrame({
-            'Component': list(capex_breakdown.keys()),
-            'Amount (USD)': [f"${v:,.0f}" for v in capex_breakdown.values()],
+            'Component': list(display_capex.keys()),
+            'Amount (USD)': [f"${v:,.0f}" for v in display_capex.values()],
             'Share (%)': [f"{v/capex_breakdown['Total CAPEX']*100:.1f}%" 
-                         for v in capex_breakdown.values()]
+                         for v in display_capex.values()]
         })
         st.dataframe(capex_df, use_container_width=True, hide_index=True)
         
-        # Pie chart
-        fig, ax = plt.subplots(figsize=(8, 6))
-        colors = plt.cm.Set3(range(len(capex_breakdown)-1))
-        ax.pie([v for k, v in capex_breakdown.items() if k != 'Total CAPEX'],
-               labels=[k for k in capex_breakdown.keys() if k != 'Total CAPEX'],
-               autopct='%1.1f%%',
-               colors=colors,
-               startangle=90)
-        ax.set_title('CAPEX Breakdown')
-        st.pyplot(fig)
+        # Pie chart - only for main categories
+        main_categories = ['APV System', 'BESS', 'Irrigation Subtotal', 'Nexus Subtotal', 'Soft Costs', 'Contingency']
+        plot_capex = {k: v for k, v in capex_breakdown.items() if k in main_categories}
+        if len(plot_capex) > 0:
+            fig, ax = plt.subplots(figsize=(8, 6))
+            colors = plt.cm.Set3(range(len(plot_capex)))
+            ax.pie(list(plot_capex.values()),
+                   labels=list(plot_capex.keys()),
+                   autopct='%1.1f%%',
+                   colors=colors,
+                   startangle=90)
+            ax.set_title('CAPEX Breakdown by Category')
+            st.pyplot(fig)
     
     with tab2:
         rev_df = pd.DataFrame({
