@@ -100,7 +100,7 @@ ethiopia_fm/
 
 ## 🔒 License & Copyright
 
-**© 2024 All Rights Reserved**
+**© 2025 All Rights Reserved**
 
 This software and its source code are **proprietary and confidential**. 
 
@@ -108,7 +108,7 @@ This software and its source code are **proprietary and confidential**.
 
 **UNAUTHORIZED USE, REPRODUCTION, OR DISTRIBUTION IS STRICTLY PROHIBITED.**
 
-This financial model and all associated documentation are the exclusive property of the copyright holder. No part of this software may be:
+This financial model and all associated documentation are the exclusive property of ENVELOPS CO., LTD. No part of this software may be:
 
 - Copied, reproduced, or distributed in any form
 - Modified, adapted, or created derivative works from
@@ -129,7 +129,7 @@ For licensing inquiries or permission requests, contact the repository owner.
 
 ## 📞 Support
 
-For authorized users only. Contact the project administrator for access and support.
+For authorized users only. Contact the ENVELOPS CO., LTD (info@en-velops.com) for access and support.
 
 ## 🔐 Security Notice
 
