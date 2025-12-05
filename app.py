@@ -747,8 +747,8 @@ class InflationInputs:
     
     # General macro parameters
     general_inflation_rate: float = 0.10  # 10%/year (Ethiopia recent trend)
-    discount_rate_real: float = 0.08  # 8%/year real discount rate
-    discount_rate_nominal: float = 0.12  # 12%/year nominal discount rate
+    discount_rate_real: float = 0.10  # 10%/year real discount rate
+    discount_rate_nominal: float = 0.10  # 10%/year nominal discount rate
     
     # === Cost-side escalation rates ===
     opex_escalation_rate: float = 0.06  # 6%/year blended O&M escalation
@@ -1784,7 +1784,7 @@ def main():
             if use_nominal:
                 discount_rate_nominal = st.number_input(
                     "Nominal Discount Rate (%/year)", 
-                    value=12.0, 
+                    value=10.0, 
                     step=0.5, 
                     format="%.1f",
                     help="Nominal WACC including inflation (typically real rate + inflation)"
@@ -1792,7 +1792,7 @@ def main():
             else:
                 discount_rate_real = st.number_input(
                     "Real Discount Rate (%/year)", 
-                    value=8.0, 
+                    value=10.0, 
                     step=0.5, 
                     format="%.1f",
                     help="Real discount rate (inflation-adjusted)"
