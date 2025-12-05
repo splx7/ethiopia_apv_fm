@@ -1824,21 +1824,21 @@ def main():
         with st.expander("Revenue-Side Escalation", expanded=False):
             tariff_esc = st.number_input(
                 "Electricity Tariff Escalation (%/year)", 
-                value=5.0, 
+                value=1.5, 
                 step=0.5, 
                 format="%.1f",
                 help="Ethiopian Power Corporation tariff adjustment history: ~3-7%/year"
             ) / 100
             crop_price_esc = st.number_input(
                 "Crop Price Escalation (%/year)", 
-                value=4.0, 
+                value=3.0, 
                 step=0.5, 
                 format="%.1f",
                 help="Agricultural commodity price trends"
             ) / 100
             processed_esc = st.number_input(
                 "Processed Product Price Escalation (%/year)", 
-                value=4.0, 
+                value=3.0, 
                 step=0.5, 
                 format="%.1f",
                 help="Value-added product price escalation"
