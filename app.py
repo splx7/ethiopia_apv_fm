@@ -1955,11 +1955,14 @@ def main():
     )
     
     # Build inflation inputs (using new attribute names)
+    # IMPORTANT: Use discount_rate from Financing section (line 1632)
+    # This overrides the inflation/escalation section rates
     inflation_inputs = InflationInputs(
         analysis_mode="nominal" if use_nominal else "real",
         general_inflation_rate=general_inflation,
-        discount_rate_nominal=discount_rate_nominal if use_nominal else 0.12,
-        discount_rate_real=discount_rate_real if not use_nominal else 0.08,
+        # Use the discount_rate from Financing section for NPV calculations
+        discount_rate_nominal=discount_rate,  # This is the user input from "Discount Rate for NPV (%)"
+        discount_rate_real=discount_rate,     # Same for real mode
         opex_escalation_rate=(wage_esc + material_esc) / 2,  # Blended rate
         wage_escalation_rate=wage_esc,
         material_escalation_rate=material_esc,
