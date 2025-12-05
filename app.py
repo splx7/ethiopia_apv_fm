@@ -757,9 +757,9 @@ class InflationInputs:
     land_lease_escalation_rate: float = 0.03  # 3%/year land lease
     
     # === Revenue-side escalation rates ===
-    energy_tariff_escalation_rate: float = 0.05  # 5%/year electricity tariff
-    crop_price_escalation_rate: float = 0.04  # 4%/year farm-gate crop prices
-    processed_price_escalation_rate: float = 0.04  # 4%/year processed product prices
+    energy_tariff_escalation_rate: float = 0.015  # 1.5%/year electricity tariff
+    crop_price_escalation_rate: float = 0.03  # 3%/year farm-gate crop prices
+    processed_price_escalation_rate: float = 0.03  # 3%/year processed product prices
     
     # Legacy compatibility
     @property
