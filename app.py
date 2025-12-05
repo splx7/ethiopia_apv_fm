@@ -1525,6 +1525,15 @@ def main():
     # ============================================================
     
     with st.sidebar:
+        # Logo at the top
+        try:
+            col1, col2, col3 = st.columns([1, 3, 1])
+            with col2:
+                st.image("assets/logo_icon.png", use_container_width=True)
+            st.markdown("---")
+        except:
+            pass  # If logo not found, continue without it
+        
         st.header("⚙️ Model Configuration")
         
         # Business model selection
